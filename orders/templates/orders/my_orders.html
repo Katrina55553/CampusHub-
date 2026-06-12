@@ -1,0 +1,78 @@
+{% extends "orders/base.html" %}
+
+{% block title %}我的订单 - CampusBite{% endblock %}
+
+{% block content %}
+<h2 style="font-weight:800; font-size:1.6rem;" class="mb-4">我的订单</h2>
+
+<ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#published" type="button">我发布的</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#helped" type="button">我接的</button>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="published">
+        {% if published_orders %}
+            <div class="list-group">
+                {% for order in published_orders %}
+                    <a href="{% url 'order_detail' order.id %}" class="list-group-item list-group-item-action animate-in">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1" style="font-weight:700;">{{ order.title }}</h6>
+                                <small style="color:var(--text-muted);">{{ order.get_location_display }} &middot; <strong style="color:var(--accent);">¥{{ order.reward }}</strong></small>
+                            </div>
+                            {% if order.status == 'pending' %}
+                                <span class="badge badge-pending">待接单</span>
+                            {% elif order.status == 'accepted' %}
+                                <span class="badge badge-accepted">已接单{% if order.helper %} &middot; {{ order.helper.username }}{% endif %}</span>
+                            {% elif order.status == 'completed' %}
+                                <span class="badge badge-completed">已完成</span>
+                            {% else %}
+                                <span class="badge badge-cancelled">已取消</span>
+                            {% endif %}
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📝</div>
+                <p>还没有发布过订单</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="tab-pane fade" id="helped">
+        {% if helped_orders %}
+            <div class="list-group">
+                {% for order in helped_orders %}
+                    <a href="{% url 'order_detail' order.id %}" class="list-group-item list-group-item-action animate-in">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1" style="font-weight:700;">{{ order.title }}</h6>
+                                <small style="color:var(--text-muted);">{{ order.get_location_display }} &middot; <strong style="color:var(--accent);">¥{{ order.reward }}</strong> &middot; {{ order.publisher.username }}</small>
+                            </div>
+                            {% if order.status == 'accepted' %}
+                                <span class="badge badge-accepted">进行中</span>
+                            {% elif order.status == 'completed' %}
+                                <span class="badge badge-completed">已完成</span>
+                            {% else %}
+                                <span class="badge badge-cancelled">{{ order.get_status_display }}</span>
+                            {% endif %}
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">🤝</div>
+                <p>还没有接过订单</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "orders/base.html" %}
+
+{% block title %}{{ order.title }} - CampusBite{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm animate-in">
+            <div class="card-body" style="padding:1.8rem;">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h4 style="font-weight:800; margin:0;">{{ order.title }}</h4>
+                    {% if order.status == 'pending' %}
+                        <span class="badge badge-pending" style="font-size:0.85rem;">待接单</span>
+                    {% elif order.status == 'accepted' %}
+                        <span class="badge badge-accepted" style="font-size:0.85rem;">已接单</span>
+                    {% elif order.status == 'completed' %}
+                        <span class="badge badge-completed" style="font-size:0.85rem;">已完成</span>
+                    {% else %}
+                        <span class="badge badge-cancelled" style="font-size:0.85rem;">已取消</span>
+                    {% endif %}
+                </div>
+
+                <table class="detail-table w-100 mb-3">
+                    <tr>
+                        <th>快递点</th>
+                        <td>{{ order.get_location_display }}</td>
+                    </tr>
+                    {% if order.description %}
+                    <tr>
+                        <th>详细描述</th>
+                        <td>{{ order.description }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if order.pickup_code %}
+                    <tr>
+                        <th>取件码</th>
+                        <td><code style="background:var(--primary-light); color:var(--primary-dark); padding:0.2rem 0.5rem; border-radius:4px;">{{ order.pickup_code }}</code></td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th>报酬</th>
+                        <td><strong style="color:var(--accent); font-size:1.1rem;">¥{{ order.reward }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>联系方式</th>
+                        <td>{{ order.contact }}</td>
+                    </tr>
+                    <tr>
+                        <th>发布者</th>
+                        <td>{{ order.publisher.username }}</td>
+                    </tr>
+                    {% if order.helper %}
+                    <tr>
+                        <th>接单者</th>
+                        <td>{{ order.helper.username }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th>发布时间</th>
+                        <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                </table>
+
+                {% if user.is_authenticated %}
+                <div class="d-flex flex-wrap gap-2 mt-3 pt-3" style="border-top:1px solid var(--border);">
+                    {% if order.status == 'pending' and order.publisher != user %}
+                        <form method="post" action="{% url 'accept_order' order.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-accent">我要接单</button>
+                        </form>
+                    {% endif %}
+
+                    {% if order.status == 'accepted' and order.publisher == user %}
+                        <form method="post" action="{% url 'complete_order' order.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">确认完成</button>
+                        </form>
+                    {% endif %}
+
+                    {% if order.status == 'pending' or order.status == 'accepted' %}
+                        {% if order.publisher == user %}
+                        <form method="post" action="{% url 'cancel_order' order.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">取消订单</button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <a href="{% url 'orders_index' %}" class="btn btn-ghost mt-3">&larr; 返回列表</a>
+    </div>
+</div>
+{% endblock %}

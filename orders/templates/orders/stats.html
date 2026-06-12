@@ -1,0 +1,226 @@
+{% extends "orders/base.html" %}
+
+{% block title %}数据统计 - CampusBite{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 style="font-weight:800; font-size:1.6rem;">📊 数据统计</h2>
+    <span style="color:var(--text-muted); font-size:0.88rem;">共 {{ total_orders }} 条订单</span>
+</div>
+
+{% if total_orders == 0 %}
+    <div class="empty-state">
+        <div class="empty-icon">📊</div>
+        <p>暂无数据，发布订单后可查看统计</p>
+    </div>
+{% else %}
+
+<!-- ===== 一、统计描述 ===== -->
+<h4 class="section-title">一、统计描述</h4>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="stat-section-label">报酬金额描述统计</h6>
+                <table class="table table-sm stat-table mb-0">
+                    <tbody>
+                        <tr><td>样本量 (n)</td><td class="text-end fw-bold">{{ reward_stats.count }}</td></tr>
+                        <tr><td>总金额</td><td class="text-end fw-bold">¥{{ reward_stats.sum }}</td></tr>
+                        <tr><td>均值 (Mean)</td><td class="text-end fw-bold">¥{{ reward_stats.mean }}</td></tr>
+                        <tr><td>中位数 (Median)</td><td class="text-end fw-bold">¥{{ reward_stats.median }}</td></tr>
+                        <tr><td>标准差 (Std)</td><td class="text-end fw-bold">{{ reward_stats.std }}</td></tr>
+                        <tr><td>最小值 (Min)</td><td class="text-end fw-bold">¥{{ reward_stats.min }}</td></tr>
+                        <tr><td>最大值 (Max)</td><td class="text-end fw-bold">¥{{ reward_stats.max }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="stat-section-label">各快递点订单统计</h6>
+                <table class="table table-sm stat-table mb-0">
+                    <thead>
+                        <tr><th>快递点</th><th class="text-end">数量</th><th class="text-end">平均报酬</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for item in location_table %}
+                        <tr>
+                            <td>{{ item.label }}</td>
+                            <td class="text-end fw-bold">{{ item.count }}</td>
+                            <td class="text-end fw-bold">¥{{ item.avg }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 二、可视化 ===== -->
+<h4 class="section-title">二、数据可视化</h4>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="chart-label">订单状态分布（饼图）</h6>
+                <div class="chart-wrapper">
+                    <canvas id="statusPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="chart-label">各快递点订单数量（柱状图）</h6>
+                <div class="chart-wrapper">
+                    <canvas id="locationBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="chart-label">各快递点平均报酬（柱状图）</h6>
+                <div class="chart-wrapper">
+                    <canvas id="rewardBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="chart-label">报酬金额分布（直方图）</h6>
+                <div class="chart-wrapper">
+                    <canvas id="rewardDistChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{{ status_labels|json_script:"statusLabels" }}
+{{ status_values|json_script:"statusValues" }}
+{{ location_labels|json_script:"locationLabels" }}
+{{ location_counts|json_script:"locationCounts" }}
+{{ location_avg_rewards|json_script:"locationAvgRewards" }}
+{{ reward_dist_labels|json_script:"rewardDistLabels" }}
+{{ reward_dist_values|json_script:"rewardDistValues" }}
+
+<script>
+const COLORS = ['#f4a261', '#457b9d', '#2a9d8f', '#adb5bd'];
+const statusLabels = JSON.parse(document.getElementById('statusLabels').textContent);
+const statusValues = JSON.parse(document.getElementById('statusValues').textContent);
+const locationLabels = JSON.parse(document.getElementById('locationLabels').textContent);
+const locationCounts = JSON.parse(document.getElementById('locationCounts').textContent);
+const locationAvgRewards = JSON.parse(document.getElementById('locationAvgRewards').textContent);
+const rewardDistLabels = JSON.parse(document.getElementById('rewardDistLabels').textContent);
+const rewardDistValues = JSON.parse(document.getElementById('rewardDistValues').textContent);
+
+// 订单状态饼图
+new Chart(document.getElementById('statusPieChart'), {
+    type: 'doughnut',
+    data: {
+        labels: statusLabels,
+        datasets: [{
+            data: statusValues,
+            backgroundColor: COLORS,
+            borderWidth: 2,
+            borderColor: '#fff',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 16, font: { size: 13 } } }
+        }
+    }
+});
+
+// 各快递点订单数量柱状图
+new Chart(document.getElementById('locationBarChart'), {
+    type: 'bar',
+    data: {
+        labels: locationLabels,
+        datasets: [{
+            label: '订单数',
+            data: locationCounts,
+            backgroundColor: '#2a9d8f',
+            borderRadius: 6,
+            maxBarThickness: 48,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } },
+            x: { ticks: { font: { size: 11 } } }
+        }
+    }
+});
+
+// 各快递点平均报酬柱状图
+new Chart(document.getElementById('rewardBarChart'), {
+    type: 'bar',
+    data: {
+        labels: locationLabels,
+        datasets: [{
+            label: '平均报酬 (¥)',
+            data: locationAvgRewards,
+            backgroundColor: '#f4a261',
+            borderRadius: 6,
+            maxBarThickness: 48,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true },
+            x: { ticks: { font: { size: 11 } } }
+        }
+    }
+});
+
+// 报酬金额分布直方图
+new Chart(document.getElementById('rewardDistChart'), {
+    type: 'bar',
+    data: {
+        labels: rewardDistLabels,
+        datasets: [{
+            label: '订单数',
+            data: rewardDistValues,
+            backgroundColor: '#457b9d',
+            borderRadius: 6,
+            maxBarThickness: 48,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } },
+            x: { title: { display: true, text: '报酬金额 (¥)', font: { size: 12 } } }
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,320 @@
+/* ========== CampusPick 快递代取模块样式 ========== */
+/* 使用独立的 CSS 变量，避免与 food 模块冲突 */
+:root {
+    --orders-primary: #2a9d8f;
+    --orders-primary-dark: #21867a;
+    --orders-primary-light: #e8f6f3;
+    --orders-accent: #f4a261;
+    --orders-accent-dark: #e07b3a;
+    --orders-danger: #e76f51;
+    --orders-bg: #f0f4f3;
+    --orders-text: #264653;
+    --orders-text-muted: #6b8a8e;
+    --orders-border: #dde5e3;
+}
+
+/* ========== 订单卡片 ========== */
+.order-card {
+    border-left: 4px solid var(--orders-border);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(38, 70, 83, 0.08);
+}
+
+.order-card.status-pending { border-left-color: var(--orders-accent); }
+.order-card.status-accepted { border-left-color: #457b9d; }
+.order-card.status-completed { border-left-color: var(--orders-primary); }
+.order-card.status-cancelled { border-left-color: #adb5bd; }
+
+/* ========== 徽章 ========== */
+.badge-pending {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.badge-accepted {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.badge-completed {
+    background: var(--orders-primary-light);
+    color: var(--orders-primary-dark);
+}
+
+.badge-cancelled {
+    background: #f5f5f5;
+    color: #757575;
+}
+
+/* ========== 按钮 ========== */
+.btn-accent {
+    background: var(--orders-accent);
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-accent:hover, .btn-accent:focus {
+    background: var(--orders-accent-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(244, 162, 97, 0.35);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--orders-text-muted);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+    background: var(--orders-primary-light);
+    color: var(--orders-primary);
+}
+
+/* ========== 状态筛选按钮 ========== */
+.filter-btn {
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.35rem 0.9rem;
+    border: 1.5px solid transparent;
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--orders-text-muted);
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.filter-btn:hover {
+    background: rgba(42, 157, 143, 0.1);
+    color: var(--orders-primary);
+    text-decoration: none;
+}
+
+.filter-btn.active-pending { background: #fff3e0; border-color: var(--orders-accent); color: #e65100; }
+.filter-btn.active-accepted { background: #e3f2fd; border-color: #457b9d; color: #1565c0; }
+.filter-btn.active-completed { background: var(--orders-primary-light); border-color: var(--orders-primary); color: var(--orders-primary-dark); }
+.filter-btn.active-cancelled { background: #f5f5f5; border-color: #adb5bd; color: #757575; }
+.filter-btn.active-all { background: var(--orders-primary); border-color: var(--orders-primary); color: #fff; }
+
+/* ========== 统计卡片 ========== */
+.stat-card {
+    display: block;
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.1rem 1rem;
+    text-decoration: none;
+    box-shadow: 0 1px 3px rgba(38, 70, 83, 0.06);
+    border-left: 4px solid var(--orders-border);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(38, 70, 83, 0.08);
+    text-decoration: none;
+}
+
+.stat-pending { border-left-color: var(--orders-accent); }
+.stat-accepted { border-left-color: #457b9d; }
+.stat-completed { border-left-color: var(--orders-primary); }
+.stat-total { border-left-color: var(--orders-text); }
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-pending .stat-number { color: #e65100; }
+.stat-accepted .stat-number { color: #1565c0; }
+.stat-completed .stat-number { color: var(--orders-primary-dark); }
+.stat-total .stat-number { color: var(--orders-text); }
+
+.stat-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--orders-text-muted);
+}
+
+/* ========== 欢迎横幅 ========== */
+.welcome-banner {
+    background: linear-gradient(135deg, #e76f51 0%, #f4a261 100%);
+    border-radius: 20px;
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(231, 111, 81, 0.25);
+}
+
+.welcome-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.welcome-title {
+    font-weight: 800;
+    font-size: 1.5rem;
+    margin: 0 0 0.2rem 0;
+    color: #fff;
+}
+
+.welcome-sub {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* ========== 认证页面 ========== */
+.auth-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+}
+
+.auth-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(38, 70, 83, 0.12);
+    overflow: hidden;
+    max-width: 420px;
+    width: 100%;
+}
+
+.auth-card .card-body {
+    padding: 2.2rem;
+}
+
+.auth-card .auth-header {
+    text-align: center;
+    margin-bottom: 1.8rem;
+}
+
+.auth-card .auth-header .auth-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.auth-card .auth-header h3 {
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--orders-text);
+    margin: 0;
+}
+
+.auth-card .auth-header p {
+    color: var(--orders-text-muted);
+    font-size: 0.88rem;
+    margin-top: 0.3rem;
+}
+
+.auth-card .form-control {
+    padding: 0.7rem 0.9rem;
+    border-radius: 12px;
+}
+
+.auth-card .btn {
+    padding: 0.7rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+}
+
+.auth-card .auth-footer {
+    text-align: center;
+    margin-top: 1.2rem;
+    font-size: 0.88rem;
+    color: var(--orders-text-muted);
+}
+
+/* ========== 搜索框 ========== */
+.search-box {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 1px 3px rgba(38, 70, 83, 0.06);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.search-box .form-control {
+    border-radius: 12px;
+    font-size: 0.95rem;
+    padding: 0.7rem 1rem;
+}
+
+/* ========== 详情页表格 ========== */
+.detail-table th {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--orders-text-muted);
+    padding: 0.7rem 0;
+    width: 100px;
+    vertical-align: top;
+}
+
+.detail-table td {
+    padding: 0.7rem 0;
+    font-size: 0.95rem;
+}
+
+/* ========== 统计页面 ========== */
+.section-title {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--orders-text);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--orders-border);
+}
+
+.stat-section-label {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--orders-text);
+    margin-bottom: 0.8rem;
+}
+
+.stat-table td, .stat-table th {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.88rem;
+    border-bottom: 1px solid var(--orders-border);
+}
+
+.stat-table th {
+    font-weight: 600;
+    color: var(--orders-text-muted);
+    font-size: 0.82rem;
+}
+
+.chart-label {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--orders-text);
+    margin-bottom: 0.8rem;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 260px;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+    .welcome-title { font-size: 1.2rem; }
+    .welcome-sub { font-size: 0.82rem; }
+    .stat-number { font-size: 1.5rem; }
+    .auth-card .card-body { padding: 1.5rem; }
+}

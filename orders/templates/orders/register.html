@@ -1,0 +1,36 @@
+{% extends "orders/base.html" %}
+
+{% block title %}注册 - CampusBite{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card card animate-in">
+        <div class="card-body">
+            <div class="auth-header">
+                <div class="auth-icon">🎓</div>
+                <h3>加入 CampusBite</h3>
+                <p>注册账号，发布或接取代取需求</p>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="username" class="form-label">用户名</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="请设置用户名" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">密码</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="请设置密码" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password2" class="form-label">确认密码</label>
+                    <input type="password" class="form-control" id="password2" name="password2" placeholder="再次输入密码" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-2">注册</button>
+            </form>
+            <div class="auth-footer">
+                已有账号？<a href="{% url 'login' %}">去登录</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

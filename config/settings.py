@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'food',  # 校园美食应用
+    'food',      # 校园美食应用
+    'orders',    # 快递代取应用
 ]
 
 MIDDLEWARE = [
@@ -122,3 +123,6 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # Media files (user uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Authentication
+LOGIN_URL = '/orders/login/'

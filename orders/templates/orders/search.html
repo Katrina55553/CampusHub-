@@ -1,0 +1,46 @@
+{% extends "orders/base.html" %}
+
+{% block title %}搜索 - CampusBite{% endblock %}
+
+{% block content %}
+<h2 style="font-weight:800; font-size:1.6rem;" class="mb-4">搜索订单</h2>
+
+<div class="search-box">
+    <form class="d-flex gap-2" method="get" action="{% url 'orders_search' %}">
+        <input type="text" class="form-control" name="q" placeholder="输入关键词搜索订单..." value="{{ keyword }}">
+        <button type="submit" class="btn btn-primary" style="white-space:nowrap;">搜索</button>
+    </form>
+</div>
+
+{% if keyword %}
+    {% if orders %}
+        <p style="color:var(--text-muted); font-size:0.88rem;" class="mb-3">找到 <strong>{{ orders|length }}</strong> 条结果</p>
+        <div class="list-group">
+            {% for order in orders %}
+                <a href="{% url 'order_detail' order.id %}" class="list-group-item list-group-item-action animate-in">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1" style="font-weight:700;">{{ order.title }}</h6>
+                            <small style="color:var(--text-muted);">{{ order.get_location_display }} &middot; <strong style="color:var(--accent);">¥{{ order.reward }}</strong> &middot; {{ order.publisher.username }}</small>
+                        </div>
+                        {% if order.status == 'pending' %}
+                            <span class="badge badge-pending">待接单</span>
+                        {% elif order.status == 'accepted' %}
+                            <span class="badge badge-accepted">已接单</span>
+                        {% elif order.status == 'completed' %}
+                            <span class="badge badge-completed">已完成</span>
+                        {% else %}
+                            <span class="badge badge-cancelled">已取消</span>
+                        {% endif %}
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <p>未找到相关订单</p>
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "orders/base.html" %}
+
+{% block title %}快递代取 - CampusBite{% endblock %}
+
+{% block content %}
+<!-- 欢迎横幅 -->
+{% if user.is_authenticated %}
+<div class="welcome-banner animate-in">
+    <div class="welcome-content">
+        <div>
+            <h2 class="welcome-title">Hi，{{ user.username }} 👋</h2>
+            <p class="welcome-sub">今天有什么快递需要帮忙取吗？</p>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="welcome-banner animate-in">
+    <div class="welcome-content">
+        <div>
+            <h2 class="welcome-title">CampusPick 📦</h2>
+            <p class="welcome-sub">校园快递代取互助平台，发布需求或接单帮忙</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- 统计卡片 -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3 animate-in">
+        <a href="{% url 'orders_index' %}?status=pending" class="stat-card stat-pending">
+            <div class="stat-number">{{ stats.pending }}</div>
+            <div class="stat-label">待接单</div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3 animate-in">
+        <a href="{% url 'orders_index' %}?status=accepted" class="stat-card stat-accepted">
+            <div class="stat-number">{{ stats.accepted }}</div>
+            <div class="stat-label">进行中</div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3 animate-in">
+        <a href="{% url 'orders_index' %}?status=completed" class="stat-card stat-completed">
+            <div class="stat-number">{{ stats.completed }}</div>
+            <div class="stat-label">已完成</div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3 animate-in">
+        <a href="{% url 'orders_index' %}" class="stat-card stat-total">
+            <div class="stat-number">{{ stats.total }}</div>
+            <div class="stat-label">全部订单</div>
+        </a>
+    </div>
+</div>
+
+<!-- 状态筛选 -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{% url 'orders_index' %}" class="filter-btn {% if not current_status %}active-all{% endif %}">全部</a>
+    <a href="{% url 'orders_index' %}?status=pending" class="filter-btn {% if current_status == 'pending' %}active-pending{% endif %}">待接单</a>
+    <a href="{% url 'orders_index' %}?status=accepted" class="filter-btn {% if current_status == 'accepted' %}active-accepted{% endif %}">已接单</a>
+    <a href="{% url 'orders_index' %}?status=completed" class="filter-btn {% if current_status == 'completed' %}active-completed{% endif %}">已完成</a>
+    <a href="{% url 'orders_index' %}?status=cancelled" class="filter-btn {% if current_status == 'cancelled' %}active-cancelled{% endif %}">已取消</a>
+</div>
+
+<!-- 订单列表 -->
+{% if orders %}
+    <div class="row">
+        {% for order in orders %}
+            <div class="col-md-6 col-lg-4 mb-3 animate-in">
+                <a href="{% url 'order_detail' order.id %}" class="text-decoration-none">
+                    <div class="card h-100 order-card status-{{ order.status }}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0" style="font-weight:700; font-size:1.05rem; color:var(--text);">{{ order.title }}</h5>
+                                {% if order.status == 'pending' %}
+                                    <span class="badge badge-pending">待接单</span>
+                                {% elif order.status == 'accepted' %}
+                                    <span class="badge badge-accepted">已接单</span>
+                                {% elif order.status == 'completed' %}
+                                    <span class="badge badge-completed">已完成</span>
+                                {% else %}
+                                    <span class="badge badge-cancelled">已取消</span>
+                                {% endif %}
+                            </div>
+                            <p class="mb-1" style="font-size:0.85rem; color:var(--text-muted);">
+                                {{ order.get_location_display }} &middot; 报酬 <strong style="color:var(--accent);">¥{{ order.reward }}</strong>
+                            </p>
+                            <p class="mb-0" style="font-size:0.82rem; color:var(--text-muted);">
+                                {{ order.publisher.username }} &middot; {{ order.created_at|date:"m-d H:i" }}
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <p>暂无订单</p>
+    </div>
+{% endif %}
+{% endblock %}
