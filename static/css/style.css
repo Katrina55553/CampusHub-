@@ -257,14 +257,11 @@ body {
 .shop-card .card-img-top {
     border-radius: 0;
     transition: var(--transition);
+    overflow: hidden;
 }
 
 .shop-card:hover .card-img-top {
     transform: scale(1.03);
-}
-
-.shop-card .card-img-top {
-    overflow: hidden;
 }
 
 .shop-card .card-body {

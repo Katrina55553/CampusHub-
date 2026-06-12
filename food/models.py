@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Avg
 from django.contrib.auth.models import User
 
 
@@ -31,16 +32,19 @@ class Shop(models.Model):
         verbose_name = '店铺'
         verbose_name_plural = '店铺'
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['name']),
+            models.Index(fields=['category']),
+            models.Index(fields=['-created_at']),
+        ]
 
     def __str__(self):
         return self.name
 
     def avg_rating(self):
         """计算平均评分"""
-        reviews = self.reviews.all()
-        if reviews:
-            return round(sum(r.rating for r in reviews) / reviews.count(), 1)
-        return 0
+        result = self.reviews.aggregate(avg=Avg('rating'))
+        return round(result['avg'], 1) if result['avg'] else 0
 
     def review_count(self):
         return self.reviews.count()
@@ -58,6 +62,10 @@ class Review(models.Model):
         verbose_name = '用户评价'
         verbose_name_plural = '用户评价'
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['shop', 'user']),
+            models.Index(fields=['rating']),
+        ]
 
     def __str__(self):
         return f'{self.user.username} - {self.shop.name} - {self.rating}星'

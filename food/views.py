@@ -1,4 +1,5 @@
 import json
+import statistics
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Avg, Count
@@ -50,7 +51,7 @@ def shop_by_category(request, pk):
 def shop_detail(request, pk):
     """店铺详情 + 评价列表"""
     shop = get_object_or_404(Shop, pk=pk)
-    reviews = shop.reviews.all()
+    reviews = shop.reviews.select_related('user').all()
 
     context = {
         'shop': shop,
@@ -79,8 +80,13 @@ def add_review(request, pk):
     shop = get_object_or_404(Shop, pk=pk)
     if request.method == 'POST':
         rating = request.POST.get('rating')
-        content = request.POST.get('content')
-        if rating and content:
+        content = request.POST.get('content', '').strip()
+        
+        if not rating or not content:
+            messages.error(request, '请填写完整信息')
+        elif len(content) > 500:
+            messages.error(request, '评价内容不能超过500字')
+        else:
             Review.objects.create(
                 shop=shop,
                 user=request.user,
@@ -88,8 +94,6 @@ def add_review(request, pk):
                 content=content
             )
             messages.success(request, '评价发表成功！')
-        else:
-            messages.error(request, '请填写完整信息')
     return redirect('shop_detail', pk=pk)
 
 
@@ -158,7 +162,6 @@ def taste_analysis(request):
 
             # 评分波动
             if len(all_ratings) >= 3:
-                import statistics
                 stdev = round(statistics.stdev(all_ratings), 1)
                 if stdev <= 0.8:
                     taste_tags.append('评分稳定 · 判断一致')
