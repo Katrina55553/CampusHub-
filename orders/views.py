@@ -1,6 +1,5 @@
 import statistics
 from decimal import Decimal, InvalidOperation
-from datetime import timedelta
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
@@ -75,13 +74,13 @@ def index(request):
     if status in ['pending', 'accepted', 'completed', 'cancelled']:
         orders = orders.filter(status=status)
 
-    # 统计数据
-    stats = {
-        'total': Order.objects.count(),
-        'pending': Order.objects.filter(status='pending').count(),
-        'accepted': Order.objects.filter(status='accepted').count(),
-        'completed': Order.objects.filter(status='completed').count(),
-    }
+    # 统计数据（单次查询优化）
+    stats = Order.objects.aggregate(
+        total=Count('id'),
+        pending=Count('id', filter=Q(status='pending')),
+        accepted=Count('id', filter=Q(status='accepted')),
+        completed=Count('id', filter=Q(status='completed')),
+    )
 
     return render(request, 'orders/index.html', {
         'orders': orders,

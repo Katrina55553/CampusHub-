@@ -1,6 +1,7 @@
 import json
 import statistics
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Avg, Count
 from django.contrib import messages
@@ -45,7 +46,7 @@ def shop_list(request):
 
 def shop_by_category(request, pk):
     """按分类查看店铺（重定向到列表+筛选参数）"""
-    return redirect(f'/shops/?category={pk}')
+    return redirect(f'{reverse("shop_list")}?category={pk}')
 
 
 def shop_detail(request, pk):

@@ -38,6 +38,11 @@ class Order(models.Model):
         ordering = ['-created_at']
         verbose_name = '订单'
         verbose_name_plural = '订单'
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['publisher']),
+            models.Index(fields=['-created_at']),
+        ]
 
     def __str__(self):
         return f'{self.title} ({self.get_status_display()})'
