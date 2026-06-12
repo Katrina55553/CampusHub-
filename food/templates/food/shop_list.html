@@ -1,0 +1,61 @@
+{% extends 'includes/base.html' %}
+{% block title %}全部店铺 - CampusBite{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- 左侧分类筛选 -->
+    <div class="col-md-3">
+        <div class="filter-sidebar">
+            <h5><i class="bi bi-funnel"></i> 分类筛选</h5>
+            <div class="list-group">
+                <a href="{% url 'shop_list' %}" class="list-group-item list-group-item-action {% if not current_category %}active{% endif %}">
+                    全部
+                </a>
+                {% for cat in categories %}
+                <a href="{% url 'shop_list' %}?category={{ cat.pk }}"
+                   class="list-group-item list-group-item-action {% if current_category.pk == cat.pk %}active{% endif %}">
+                    <i class="bi {{ cat.icon }}"></i> {{ cat.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 右侧店铺列表 -->
+    <div class="col-md-9">
+        <h4 class="page-title">
+            {% if current_category %}
+                {{ current_category.name }}
+            {% else %}
+                全部店铺
+            {% endif %}
+            <small>({{ shops.count }} 家)</small>
+        </h4>
+        <div class="row g-3">
+            {% for shop in shops %}
+            <div class="col-md-4 col-6 animate-in">
+                <div class="card h-100 shop-card">
+                    <img src="{{ shop.image.url }}" class="card-img-top" alt="{{ shop.name }}" style="height:160px;object-fit:cover;">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ shop.name }}</h6>
+                        <div class="shop-location">
+                            <i class="bi bi-geo-alt"></i> {{ shop.location }}
+                        </div>
+                        <div class="shop-meta">
+                            <span class="shop-rating"><i class="bi bi-star-fill"></i> {{ shop.avg_rating }}</span>
+                            <span class="shop-price">&yen;{{ shop.avg_price }}</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'shop_detail' shop.pk %}" class="stretched-link"></a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-shop"></i>
+                <p>该分类下暂无店铺</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

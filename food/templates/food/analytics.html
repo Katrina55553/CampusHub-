@@ -1,0 +1,143 @@
+{% extends 'includes/base.html' %}
+{% block title %}数据统计 - CampusBite{% endblock %}
+
+{% block content %}
+<!-- 概览卡片 -->
+<div class="row g-3 mb-4">
+    <div class="col-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_shops }}</div>
+            <div class="stat-label">收录店铺</div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_reviews }}</div>
+            <div class="stat-label">用户评价</div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_categories }}</div>
+            <div class="stat-label">美食分类</div>
+        </div>
+    </div>
+</div>
+
+<!-- 图表区域 -->
+<div class="row g-4">
+    <!-- 评分分布直方图 -->
+    <div class="col-md-6">
+        <div class="chart-card">
+            <h5 class="chart-title"><i class="bi bi-bar-chart"></i> 评分分布</h5>
+            <canvas id="ratingChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 分类占比饼图 -->
+    <div class="col-md-6">
+        <div class="chart-card">
+            <h5 class="chart-title"><i class="bi bi-pie-chart"></i> 分类占比</h5>
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+    // 通用配色
+    const COLORS = {
+        primary: '#FF6B35',
+        accent: '#FFB347',
+        palette: ['#FF6B35','#FFB347','#4CAF50','#2196F3','#9C27B0','#F44336','#00BCD4','#FF9800'],
+        bg: '#FFF8F0',
+    };
+
+    // ---- 1. 评分分布直方图 ----
+    new Chart(document.getElementById('ratingChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ rating_labels|safe }},
+            datasets: [{
+                label: '评价数量',
+                data: {{ rating_data|safe }},
+                backgroundColor: [
+                    '#F44336', '#FF9800', '#FFB347', '#8BC34A', '#4CAF50'
+                ],
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#2D2A26',
+                    titleFont: { weight: 'bold' },
+                    padding: 12,
+                    cornerRadius: 10,
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1, color: '#8C8580' },
+                    grid: { color: '#F0E8E0' },
+                },
+                x: {
+                    ticks: { color: '#2D2A26', font: { weight: 'bold' } },
+                    grid: { display: false },
+                }
+            }
+        }
+    });
+
+    // ---- 2. 分类占比饼图 ----
+    new Chart(document.getElementById('pieChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ pie_labels|safe }},
+            datasets: [{
+                data: {{ pie_data|safe }},
+                backgroundColor: COLORS.palette,
+                borderWidth: 3,
+                borderColor: '#fff',
+                hoverOffset: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '55%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyleWidth: 10,
+                        font: { size: 13 },
+                        color: '#2D2A26',
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#2D2A26',
+                    padding: 12,
+                    cornerRadius: 10,
+                    callbacks: {
+                        label: function(ctx) {
+                            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                            const pct = ((ctx.raw / total) * 100).toFixed(1);
+                            return ` ${ctx.label}: ${ctx.raw} 家 (${pct}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'includes/base.html' %}
+{% block title %}判别分析 - CampusBite{% endblock %}
+
+{% block content %}
+{% if is_authenticated and user_review_count > 0 %}
+<!-- ====== 已登录且有评价 ====== -->
+
+<!-- 口味画像 -->
+<div class="taste-profile-card mb-4">
+    <div class="taste-profile-header">
+        <div class="taste-avatar">{{ user.username|first|upper }}</div>
+        <div>
+            <h4 class="mb-1">{{ user.username }} 的口味画像</h4>
+            <div class="taste-tags">
+                {% for tag in taste_tags %}
+                <span class="taste-tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="taste-stats">
+        <div class="taste-stat-item">
+            <div class="taste-stat-num">{{ user_review_count }}</div>
+            <div class="taste-stat-label">评价数</div>
+        </div>
+        <div class="taste-stat-item">
+            <div class="taste-stat-num">{{ user_avg_rating }}</div>
+            <div class="taste-stat-label">平均评分</div>
+        </div>
+        <div class="taste-stat-item">
+            <div class="taste-stat-num">{{ cat_avg_list|length }}</div>
+            <div class="taste-stat-label">涉猎分类</div>
+        </div>
+    </div>
+</div>
+
+<!-- 各分类评分详情 -->
+<div class="chart-card mb-4">
+    <h5 class="chart-title"><i class="bi bi-bar-chart-line"></i> 各分类评分偏好</h5>
+    <div class="cat-rating-bars">
+        {% for cat in cat_avg_list %}
+        <div class="cat-rating-row">
+            <span class="cat-rating-name">{{ cat.name }}</span>
+            <div class="cat-rating-bar-bg">
+                <div class="cat-rating-bar" style="width: {{ cat.percent }}%;"></div>
+            </div>
+            <span class="cat-rating-value">{{ cat.avg }} 分 · {{ cat.count }} 条评价</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 个性化推荐 -->
+{% if recommendations %}
+<div class="mb-4">
+    <h5 class="chart-title"><i class="bi bi-heart"></i> 猜你想吃 · 根据你的口味推荐</h5>
+    <div class="row g-3">
+        {% for shop in recommendations %}
+        <div class="col-md-4 col-6">
+            <div class="card h-100 shop-card">
+                <img src="{{ shop.image.url }}" class="card-img-top" alt="{{ shop.name }}" style="height:140px;object-fit:cover;">
+                <div class="card-body">
+                    <h6 class="card-title">{{ shop.name }}</h6>
+                    <div class="shop-location">
+                        <i class="bi bi-geo-alt"></i> {{ shop.location }}
+                    </div>
+                    <div class="shop-meta">
+                        <span class="shop-rating"><i class="bi bi-star-fill"></i> {{ shop.avg_r|default:"暂无" }}</span>
+                        <span class="shop-price">&yen;{{ shop.avg_price }}</span>
+                    </div>
+                </div>
+                <a href="{% url 'shop_detail' shop.pk %}" class="stretched-link"></a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% elif is_authenticated %}
+<!-- ====== 已登录但无评价 ====== -->
+<div class="empty-state" style="padding:4rem 1rem;">
+    <i class="bi bi-chat-square-text"></i>
+    <p>你还没有发表过评价，快去点评几家店铺吧~</p>
+    <a href="{% url 'shop_list' %}" class="btn btn-danger mt-2">去逛逛</a>
+</div>
+
+{% else %}
+<!-- ====== 未登录 ====== -->
+<div class="taste-login-card mb-4">
+    <div class="taste-login-icon"><i class="bi bi-person-lines-fill"></i></div>
+    <h4>口味判别分析</h4>
+    <p>登录后系统会根据你的评分记录，分析你的口味偏好，并推荐你可能喜欢的店铺。</p>
+    <a href="{% url 'admin:login' %}" class="btn btn-danger">登录查看我的口味</a>
+</div>
+
+<!-- 未登录展示全站热门 -->
+<div>
+    <h5 class="chart-title"><i class="bi bi-fire"></i> 全站热门推荐</h5>
+    <div class="row g-3">
+        {% for shop in popular_shops %}
+        <div class="col-md-4 col-6">
+            <div class="card h-100 shop-card">
+                <img src="{{ shop.image.url }}" class="card-img-top" alt="{{ shop.name }}" style="height:140px;object-fit:cover;">
+                <div class="card-body">
+                    <h6 class="card-title">{{ shop.name }}</h6>
+                    <div class="shop-location">
+                        <i class="bi bi-geo-alt"></i> {{ shop.location }}
+                    </div>
+                    <div class="shop-meta">
+                        <span class="shop-rating"><i class="bi bi-star-fill"></i> {{ shop.avg_r|default:"暂无" }}</span>
+                        <span class="shop-price">&yen;{{ shop.avg_price }}</span>
+                    </div>
+                </div>
+                <a href="{% url 'shop_detail' shop.pk %}" class="stretched-link"></a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

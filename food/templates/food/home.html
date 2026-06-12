@@ -1,0 +1,88 @@
+{% extends 'includes/base.html' %}
+{% block title %}CampusBite - 校园美食地图{% endblock %}
+
+{% block content %}
+<!-- Hero 区域 -->
+<div class="hero-section animate-in">
+    <h1>发现校园好味道</h1>
+    <p>食堂、奶茶、小吃、火锅... 帮你找到最值得吃的那一家</p>
+    <span class="hero-emoji">&#127828;</span>
+</div>
+
+<!-- 分类导航 -->
+<section class="mb-5">
+    <h4 class="section-title">
+        <span class="title-accent"></span>
+        <i class="bi bi-grid-3x3-gap-fill"></i> 美食分类
+    </h4>
+    <div class="row g-3">
+        {% for cat in categories %}
+        <div class="col-4 col-md-2 animate-in">
+            <a href="{% url 'shop_by_category' cat.pk %}" class="text-decoration-none">
+                <div class="category-card">
+                    <i class="bi {{ cat.icon }}"></i>
+                    <small>{{ cat.name }}</small>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- 高分推荐 -->
+<section class="mb-5">
+    <h4 class="section-title">
+        <span class="title-accent"></span>
+        <i class="bi bi-star-fill"></i> 高分推荐
+    </h4>
+    <div class="row g-3">
+        {% for shop in top_shops %}
+        <div class="col-md-3 col-6 animate-in">
+            <div class="card h-100 shop-card">
+                <img src="{{ shop.image.url }}" class="card-img-top" alt="{{ shop.name }}" style="height:150px;object-fit:cover;">
+                <div class="card-body">
+                    <h6 class="card-title">{{ shop.name }}</h6>
+                    <div class="shop-location">
+                        <i class="bi bi-geo-alt"></i> {{ shop.location }}
+                    </div>
+                    <div class="shop-meta">
+                        <span class="shop-rating"><i class="bi bi-star-fill"></i> {{ shop.avg_rating|default:"暂无" }}</span>
+                        <span class="shop-price">&yen;{{ shop.avg_price }}</span>
+                    </div>
+                </div>
+                <a href="{% url 'shop_detail' shop.pk %}" class="stretched-link"></a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <i class="bi bi-shop"></i>
+            <p>暂无数据，快去后台添加吧~</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- 最新店铺 -->
+<section>
+    <h4 class="section-title">
+        <span class="title-accent"></span>
+        <i class="bi bi-clock"></i> 最新收录
+    </h4>
+    <div class="row g-3">
+        {% for shop in new_shops %}
+        <div class="col-md-3 col-6 animate-in">
+            <div class="card h-100 shop-card">
+                <img src="{{ shop.image.url }}" class="card-img-top" alt="{{ shop.name }}" style="height:150px;object-fit:cover;">
+                <div class="card-body">
+                    <h6 class="card-title">{{ shop.name }}</h6>
+                    <div class="shop-location">
+                        <i class="bi bi-geo-alt"></i> {{ shop.location }}
+                    </div>
+                </div>
+                <a href="{% url 'shop_detail' shop.pk %}" class="stretched-link"></a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

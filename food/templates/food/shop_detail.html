@@ -1,0 +1,94 @@
+{% extends 'includes/base.html' %}
+{% block title %}{{ shop.name }} - CampusBite{% endblock %}
+
+{% block content %}
+<!-- 店铺信息 -->
+<div class="row g-4 mb-4">
+    <div class="col-md-5">
+        <div class="shop-img-wrapper">
+            <img src="{{ shop.image.url }}" class="shop-hero-img" alt="{{ shop.name }}">
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="shop-info-card">
+            <h2>{{ shop.name }}</h2>
+            <div class="shop-stat">
+                <span class="badge shop-badge">{{ shop.category.name }}</span>
+                <span class="shop-stat-item">
+                    <i class="bi bi-star-fill"></i>
+                    <strong>{{ shop.avg_rating }}</strong> ({{ shop.review_count }}条评价)
+                </span>
+                <span class="shop-stat-item">
+                    <i class="bi bi-cash-stack"></i>
+                    人均 <strong>&yen;{{ shop.avg_price }}</strong>
+                </span>
+            </div>
+            <p class="shop-stat-item mb-3">
+                <i class="bi bi-geo-alt-fill"></i> {{ shop.location }}
+            </p>
+            <p class="shop-description">{{ shop.description }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- 评价表单 -->
+{% if user.is_authenticated %}
+<div class="review-form-card mb-4">
+    <h5><i class="bi bi-chat-dots"></i> 写评价</h5>
+    <form action="{% url 'add_review' shop.pk %}" method="post">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-3">
+                <select name="rating" class="form-select" required>
+                    <option value="">选择评分</option>
+                    <option value="5">&#11088;&#11088;&#11088;&#11088;&#11088; 非常棒</option>
+                    <option value="4">&#11088;&#11088;&#11088;&#11088; 不错</option>
+                    <option value="3">&#11088;&#11088;&#11088; 一般</option>
+                    <option value="2">&#11088;&#11088; 较差</option>
+                    <option value="1">&#11088; 很差</option>
+                </select>
+            </div>
+            <div class="col-md-7">
+                <textarea name="content" class="form-control" rows="1" placeholder="分享你的美食体验..." required></textarea>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-danger w-100">发表</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% else %}
+<div class="login-hint mb-4">
+    <i class="bi bi-person-circle"></i>
+    <span>请先<a href="{% url 'admin:login' %}">登录</a>后发表评价</span>
+</div>
+{% endif %}
+
+<!-- 评价列表 -->
+<h4 class="reviews-section-title">
+    <i class="bi bi-chat-left-text"></i> 全部评价 ({{ reviews.count }})
+</h4>
+{% for review in reviews %}
+<div class="review-card">
+    <div class="review-header">
+        <div class="review-username">
+            <span class="review-avatar">{{ review.user.username|first|upper }}</span>
+            {{ review.user.username }}
+        </div>
+        <span class="review-time">{{ review.created_at|date:"Y-m-d H:i" }}</span>
+    </div>
+    <div class="review-stars">
+        {% for i in "12345" %}
+            {% if forloop.counter <= review.rating %}&#11088;{% else %}<span style="opacity:0.2">&#11088;</span>{% endif %}
+        {% endfor %}
+    </div>
+    <p class="review-content">{{ review.content }}</p>
+</div>
+{% empty %}
+<div class="empty-state">
+    <i class="bi bi-chat-square-text"></i>
+    <p>暂无评价，来做第一个点评的人吧~</p>
+</div>
+{% endfor %}
+
+{% endblock %}

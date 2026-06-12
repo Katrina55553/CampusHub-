@@ -1,0 +1,924 @@
+/* ============================================
+   CampusBite 校园美食地图 — 视觉系统
+   设计方向：温暖俏皮，美食氛围
+   ============================================ */
+
+/* --- CSS 变量 --- */
+:root {
+    --primary: #FF6B35;
+    --primary-dark: #E55A2B;
+    --primary-light: #FF8F65;
+    --accent: #FFB347;
+    --bg: #FFF8F0;
+    --bg-card: #FFFFFF;
+    --text: #2D2A26;
+    --text-muted: #8C8580;
+    --text-light: #B5AEA7;
+    --border: #F0E8E0;
+    --shadow-sm: 0 2px 8px rgba(45, 42, 38, 0.06);
+    --shadow-md: 0 4px 20px rgba(45, 42, 38, 0.08);
+    --shadow-lg: 0 8px 32px rgba(45, 42, 38, 0.12);
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-full: 9999px;
+    --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* --- 全局 --- */
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --- 导航栏（毛玻璃） --- */
+.navbar {
+    background: rgba(45, 42, 38, 0.92) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 0.6rem 0;
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+    color: #fff !important;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.navbar-brand i {
+    color: var(--primary);
+    font-size: 1.3rem;
+}
+
+.navbar .nav-link {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--radius-full);
+    transition: var(--transition);
+}
+
+.navbar .nav-link:hover {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* 搜索框 */
+.navbar .form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    padding: 0.4rem 1rem;
+}
+
+.navbar .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.navbar .form-control:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+    color: #fff;
+}
+
+.navbar .btn-outline-light {
+    border-radius: var(--radius-full);
+    padding: 0.4rem 0.8rem;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.navbar .btn-outline-light:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+/* --- Hero 区域 --- */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    border-radius: var(--radius-lg);
+    padding: 2rem 2.5rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: 10%;
+    width: 250px;
+    height: 250px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+}
+
+.hero-section h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-section p {
+    opacity: 0.9;
+    font-size: 1rem;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 0;
+}
+
+.hero-emoji {
+    font-size: 3rem;
+    position: absolute;
+    right: 2.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+/* --- 章节标题 --- */
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-title i {
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+
+.section-title .title-accent {
+    display: inline-block;
+    width: 4px;
+    height: 20px;
+    background: var(--primary);
+    border-radius: 2px;
+    margin-right: 4px;
+}
+
+/* --- 分类卡片 --- */
+.category-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.2rem 0.5rem;
+    text-align: center;
+    transition: var(--transition);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-light);
+}
+
+.category-card:hover::before {
+    opacity: 1;
+}
+
+.category-card i {
+    font-size: 1.8rem;
+    color: var(--primary);
+    display: block;
+    margin-bottom: 0.4rem;
+    transition: var(--transition);
+}
+
+.category-card:hover i {
+    transform: scale(1.1);
+}
+
+.category-card small {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--text);
+}
+
+/* --- 店铺卡片 --- */
+.shop-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: var(--transition);
+    position: relative;
+}
+
+.shop-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+}
+
+.shop-card .card-img-top {
+    border-radius: 0;
+    transition: var(--transition);
+}
+
+.shop-card:hover .card-img-top {
+    transform: scale(1.03);
+}
+
+.shop-card .card-img-top {
+    overflow: hidden;
+}
+
+.shop-card .card-body {
+    padding: 1rem;
+}
+
+.shop-card .card-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+}
+
+.shop-card .shop-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+}
+
+.shop-card .shop-location {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.shop-card .shop-rating {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.shop-card .shop-price {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.shop-card .stretched-link {
+    border-radius: var(--radius-md);
+}
+
+/* --- 分类筛选侧栏 --- */
+.filter-sidebar {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 1.2rem;
+    position: sticky;
+    top: 1rem;
+}
+
+.filter-sidebar h5 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.filter-sidebar .list-group {
+    border: none;
+    gap: 6px;
+}
+
+.filter-sidebar .list-group-item {
+    border: none;
+    border-radius: var(--radius-sm) !important;
+    padding: 0.65rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text);
+    background: transparent;
+    transition: var(--transition);
+}
+
+.filter-sidebar .list-group-item:hover {
+    background: var(--bg);
+    color: var(--primary);
+}
+
+.filter-sidebar .list-group-item.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    border: none;
+    font-weight: 600;
+}
+
+.filter-sidebar .list-group-item i {
+    margin-right: 8px;
+    width: 18px;
+    text-align: center;
+}
+
+/* --- 店铺详情页 --- */
+.shop-img-wrapper {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.shop-hero-img {
+    border-radius: 0;
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+}
+
+.shop-info-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 1.8rem;
+}
+
+.shop-info-card h2 {
+    font-weight: 800;
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
+}
+
+.shop-badge {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    padding: 0.4em 0.8em;
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+}
+
+.shop-stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+}
+
+.shop-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.shop-stat-item i {
+    color: var(--primary);
+}
+
+.shop-stat-item strong {
+    color: var(--text);
+}
+
+.shop-description {
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-size: 0.92rem;
+}
+
+/* --- 评价表单 --- */
+.review-form-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+}
+
+.review-form-card h5 {
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.review-form-card h5 i {
+    color: var(--primary);
+}
+
+.review-form-card .form-select,
+.review-form-card .form-control {
+    border-radius: var(--radius-sm);
+    border-color: var(--border);
+    font-size: 0.9rem;
+}
+
+.review-form-card .form-select:focus,
+.review-form-card .form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 0.6rem 1.8rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.35);
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+}
+
+/* 也支持 btn-danger 样式（兼容模板中的原有 class） */
+.btn-danger {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    border: none !important;
+    border-radius: var(--radius-full) !important;
+    padding: 0.6rem 1.8rem !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    transition: var(--transition) !important;
+}
+
+.btn-danger:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.35) !important;
+}
+
+/* --- 评价卡片 --- */
+.review-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 0.8rem;
+    transition: var(--transition);
+}
+
+.review-card:hover {
+    box-shadow: var(--shadow-sm);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+}
+
+.review-username {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.review-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-light), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+.review-time {
+    font-size: 0.78rem;
+    color: var(--text-light);
+}
+
+.review-stars {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+}
+
+.review-content {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* --- 搜索结果 --- */
+.search-header {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.search-header h4 {
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin: 0;
+}
+
+.search-header .search-query {
+    color: var(--primary);
+}
+
+/* --- 空状态 --- */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: var(--border);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.empty-state p {
+    font-size: 0.92rem;
+}
+
+/* --- 消息提示 --- */
+.alert {
+    border-radius: var(--radius-sm);
+    border: none;
+    font-size: 0.88rem;
+}
+
+.alert-success {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.alert-info {
+    background: #E3F2FD;
+    color: #1565C0;
+}
+
+.alert-warning {
+    background: #FFF3E0;
+    color: #E65100;
+}
+
+.alert-danger {
+    background: #FFEBEE;
+    color: #C62828;
+}
+
+/* --- 页脚 --- */
+footer {
+    background: var(--bg-card) !important;
+    border-top: 1px solid var(--border) !important;
+    padding: 1.2rem 0 !important;
+    margin-top: 2rem !important;
+}
+
+footer p {
+    font-size: 0.82rem;
+    color: var(--text-light) !important;
+}
+
+/* --- 页面标题 --- */
+.page-title {
+    font-weight: 800;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+}
+
+.page-title small {
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* --- 登录提示 --- */
+.login-hint {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.login-hint i {
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+.login-hint a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+/* --- 评价区域标题 --- */
+.reviews-section-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reviews-section-title i {
+    color: var(--primary);
+}
+
+/* --- 数据统计页 --- */
+.stat-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 1.2rem;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+}
+
+.chart-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+}
+
+.chart-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chart-title i {
+    color: var(--primary);
+}
+
+/* --- 判别分析页 --- */
+.taste-profile-card {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    color: #fff;
+}
+
+.taste-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 1.5rem;
+}
+
+.taste-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.taste-profile-header h4 {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.taste-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 0.5rem;
+}
+
+.taste-tag {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+}
+
+.taste-stats {
+    display: flex;
+    gap: 2rem;
+}
+
+.taste-stat-item {
+    text-align: center;
+}
+
+.taste-stat-num {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.taste-stat-label {
+    font-size: 0.78rem;
+    opacity: 0.8;
+    margin-top: 0.2rem;
+}
+
+/* 分类评分进度条 */
+.cat-rating-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cat-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cat-rating-name {
+    width: 80px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.cat-rating-bar-bg {
+    flex: 1;
+    height: 10px;
+    background: var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.cat-rating-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 5px;
+    transition: width 0.6s ease;
+}
+
+.cat-rating-value {
+    width: 130px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+/* 未登录提示 */
+.taste-login-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.taste-login-icon {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.taste-login-card h4 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.taste-login-card p {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    max-width: 400px;
+    margin: 0 auto 1.5rem;
+}
+
+/* --- 动画 --- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeInUp 0.4s ease-out both;
+}
+
+.animate-in:nth-child(2) { animation-delay: 0.05s; }
+.animate-in:nth-child(3) { animation-delay: 0.1s; }
+.animate-in:nth-child(4) { animation-delay: 0.15s; }
+.animate-in:nth-child(5) { animation-delay: 0.2s; }
+.animate-in:nth-child(6) { animation-delay: 0.25s; }
+.animate-in:nth-child(7) { animation-delay: 0.3s; }
+.animate-in:nth-child(8) { animation-delay: 0.35s; }
+
+/* --- 响应式 --- */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 1.5rem;
+    }
+
+    .hero-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .hero-emoji {
+        font-size: 2rem;
+        right: 1.5rem;
+    }
+
+    .shop-hero-img {
+        height: 200px;
+    }
+
+    .filter-sidebar {
+        position: static;
+        margin-bottom: 1.5rem;
+    }
+
+    .navbar .form-control {
+        width: 140px;
+    }
+}
