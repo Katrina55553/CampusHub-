@@ -1,60 +1,91 @@
 /* ============================================
-   CampusBite 校园美食地图 — 视觉系统
-   设计方向：温暖俏皮，美食氛围
+   CampusBite 校园美食地图 — 视觉系统 v2
+   设计方向：校园生活杂志风 / 温暖、有质感、现代
    ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;800&display=swap');
 
 /* --- CSS 变量 --- */
 :root {
-    --primary: #FF6B35;
-    --primary-dark: #E55A2B;
-    --primary-light: #FF8F65;
-    --accent: #FFB347;
-    --bg: #FFF8F0;
+    --primary: #E85D04;
+    --primary-dark: #C44D03;
+    --primary-light: #FF7B33;
+    --accent: #FAA307;
+    --bg: #FFFBF7;
     --bg-card: #FFFFFF;
-    --text: #2D2A26;
-    --text-muted: #8C8580;
-    --text-light: #B5AEA7;
-    --border: #F0E8E0;
-    --shadow-sm: 0 2px 8px rgba(45, 42, 38, 0.06);
-    --shadow-md: 0 4px 20px rgba(45, 42, 38, 0.08);
-    --shadow-lg: 0 8px 32px rgba(45, 42, 38, 0.12);
-    --radius-sm: 10px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
+    --text: #1F1A17;
+    --text-muted: #7A726A;
+    --text-light: #B0A9A2;
+    --border: #F2EAE4;
+    --shadow-sm: 0 2px 8px rgba(31, 26, 23, 0.05);
+    --shadow-md: 0 8px 24px rgba(31, 26, 23, 0.08);
+    --shadow-lg: 0 16px 48px rgba(31, 26, 23, 0.10);
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 28px;
     --radius-full: 9999px;
     --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
 /* --- 全局 --- */
 body {
     background-color: var(--bg);
+    background-image:
+        radial-gradient(circle at 20% 10%, rgba(232, 93, 4, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(250, 163, 7, 0.05) 0%, transparent 40%);
     color: var(--text);
-    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
 }
 
-/* --- 导航栏（毛玻璃） --- */
+h1, h2, h3, h4, h5, h6,
+.navbar-brand,
+.section-title,
+.page-title,
+.hero-section h1,
+.shop-info-card h2,
+.taste-profile-header h4,
+.reviews-section-title {
+    font-family: "Noto Serif SC", "Noto Sans SC", serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+/* --- 导航栏 --- */
 .navbar {
-    background: rgba(45, 42, 38, 0.92) !important;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(31, 26, 23, 0.92) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    padding: 0.6rem 0;
+    padding: 0.65rem 0;
 }
 
 .navbar-brand {
-    font-weight: 800;
-    font-size: 1.2rem;
-    letter-spacing: -0.02em;
+    font-size: 1.25rem;
     color: #fff !important;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .navbar-brand i {
     color: var(--primary);
-    font-size: 1.3rem;
+    font-size: 1.35rem;
 }
 
 .navbar .nav-link {
@@ -66,9 +97,10 @@ body {
     transition: var(--transition);
 }
 
-.navbar .nav-link:hover {
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
     color: #fff !important;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
 }
 
 /* 搜索框 */
@@ -78,24 +110,26 @@ body {
     color: #fff;
     border-radius: var(--radius-full);
     font-size: 0.85rem;
-    padding: 0.4rem 1rem;
+    padding: 0.45rem 1rem;
+    transition: var(--transition);
 }
 
 .navbar .form-control::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.45);
 }
 
 .navbar .form-control:focus {
     background: rgba(255, 255, 255, 0.15);
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+    box-shadow: 0 0 0 3px rgba(232, 93, 4, 0.2);
     color: #fff;
 }
 
 .navbar .btn-outline-light {
     border-radius: var(--radius-full);
-    padding: 0.4rem 0.8rem;
+    padding: 0.45rem 0.85rem;
     border-color: rgba(255, 255, 255, 0.15);
+    transition: var(--transition);
 }
 
 .navbar .btn-outline-light:hover {
@@ -107,83 +141,113 @@ body {
 .hero-section {
     background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
     border-radius: var(--radius-lg);
-    padding: 2rem 2.5rem;
+    padding: 3.5rem 2.5rem;
     color: #fff;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-md);
 }
 
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -20%;
-    width: 400px;
-    height: 400px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 50%;
-}
-
+.hero-section::before,
 .hero-section::after {
     content: '';
     position: absolute;
-    bottom: -30%;
-    left: 10%;
-    width: 250px;
-    height: 250px;
-    background: rgba(255, 255, 255, 0.05);
     border-radius: 50%;
+    filter: blur(40px);
+}
+
+.hero-section::before {
+    top: -40%;
+    right: -10%;
+    width: 420px;
+    height: 420px;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.hero-section::after {
+    bottom: -30%;
+    left: 5%;
+    width: 280px;
+    height: 280px;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .hero-section h1 {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
+    font-size: 2.4rem;
+    margin-bottom: 0.6rem;
     position: relative;
     z-index: 1;
+    text-shadow: 0 2px 10px rgba(31, 26, 23, 0.15);
 }
 
 .hero-section p {
-    opacity: 0.9;
-    font-size: 1rem;
+    opacity: 0.92;
+    font-size: 1.05rem;
     position: relative;
     z-index: 1;
-    margin-bottom: 0;
+    margin-bottom: 1.2rem;
+    max-width: 520px;
 }
 
 .hero-emoji {
-    font-size: 3rem;
+    font-size: 4rem;
     position: absolute;
     right: 2.5rem;
     top: 50%;
     transform: translateY(-50%);
     z-index: 1;
+    filter: drop-shadow(0 6px 12px rgba(31, 26, 23, 0.15));
+    animation: float 4s ease-in-out infinite;
+}
+
+.hero-cta {
+    position: relative;
+    z-index: 1;
+    background: #fff;
+    color: var(--primary) !important;
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 0.65rem 1.6rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hero-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(31, 26, 23, 0.2);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(-50%) translateY(0); }
+    50% { transform: translateY(-50%) translateY(-10px); }
 }
 
 /* --- 章节标题 --- */
 .section-title {
-    font-size: 1.2rem;
-    font-weight: 700;
+    font-size: 1.35rem;
     color: var(--text);
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.4rem;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .section-title i {
     color: var(--primary);
-    font-size: 1.1rem;
+    font-size: 1.15rem;
 }
 
 .section-title .title-accent {
     display: inline-block;
-    width: 4px;
-    height: 20px;
-    background: var(--primary);
-    border-radius: 2px;
-    margin-right: 4px;
+    width: 5px;
+    height: 24px;
+    background: linear-gradient(180deg, var(--primary), var(--accent));
+    border-radius: 3px;
 }
 
 /* --- 分类卡片 --- */
@@ -191,12 +255,13 @@ body {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: 1.2rem 0.5rem;
+    padding: 1.4rem 0.6rem;
     text-align: center;
     transition: var(--transition);
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
 }
 
 .category-card::before {
@@ -205,14 +270,14 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
+    height: 4px;
     background: linear-gradient(90deg, var(--primary), var(--accent));
     opacity: 0;
     transition: var(--transition);
 }
 
 .category-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
     border-color: var(--primary-light);
 }
@@ -222,20 +287,27 @@ body {
 }
 
 .category-card i {
-    font-size: 1.8rem;
-    color: var(--primary);
-    display: block;
-    margin-bottom: 0.4rem;
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 14px;
     transition: var(--transition);
 }
 
 .category-card:hover i {
-    transform: scale(1.1);
+    transform: scale(1.08) rotate(-3deg);
+    box-shadow: 0 6px 16px rgba(232, 93, 4, 0.25);
 }
 
 .category-card small {
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text);
 }
 
@@ -247,11 +319,13 @@ body {
     overflow: hidden;
     transition: var(--transition);
     position: relative;
+    box-shadow: var(--shadow-sm);
 }
 
 .shop-card:hover {
     transform: translateY(-6px);
     box-shadow: var(--shadow-lg);
+    border-color: rgba(232, 93, 4, 0.2);
 }
 
 .shop-card .card-img-top {
@@ -261,31 +335,31 @@ body {
 }
 
 .shop-card:hover .card-img-top {
-    transform: scale(1.03);
+    transform: scale(1.04);
 }
 
 .shop-card .card-body {
-    padding: 1rem;
+    padding: 1.1rem;
 }
 
 .shop-card .card-title {
-    font-weight: 700;
-    font-size: 0.95rem;
+    font-weight: 800;
+    font-size: 1rem;
     color: var(--text);
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.35rem;
 }
 
 .shop-card .shop-meta {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 0.5rem;
-    font-size: 0.82rem;
+    gap: 10px;
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
 }
 
 .shop-card .shop-location {
     color: var(--text-muted);
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -310,16 +384,24 @@ body {
     background: var(--bg-card);
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
-    padding: 1.2rem;
+    padding: 1.4rem;
     position: sticky;
     top: 1rem;
+    box-shadow: var(--shadow-sm);
 }
 
 .filter-sidebar h5 {
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 1.05rem;
+    font-weight: 800;
     margin-bottom: 1rem;
     color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-sidebar h5 i {
+    color: var(--primary);
 }
 
 .filter-sidebar .list-group {
@@ -362,12 +444,13 @@ body {
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
 }
 
 .shop-hero-img {
     border-radius: 0;
     width: 100%;
-    height: 240px;
+    height: 280px;
     object-fit: cover;
     display: block;
 }
@@ -376,13 +459,14 @@ body {
     background: var(--bg-card);
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
-    padding: 1.8rem;
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+    height: 100%;
 }
 
 .shop-info-card h2 {
-    font-weight: 800;
-    font-size: 1.6rem;
-    margin-bottom: 0.8rem;
+    font-size: 1.75rem;
+    margin-bottom: 0.9rem;
 }
 
 .shop-badge {
@@ -390,15 +474,15 @@ body {
     color: #fff;
     border: none;
     font-weight: 600;
-    padding: 0.4em 0.8em;
+    padding: 0.4em 0.9em;
     border-radius: var(--radius-full);
-    font-size: 0.8rem;
+    font-size: 0.82rem;
 }
 
 .shop-stat {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     margin: 1rem 0;
     flex-wrap: wrap;
 }
@@ -407,7 +491,7 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     color: var(--text-muted);
 }
 
@@ -421,8 +505,8 @@ body {
 
 .shop-description {
     color: var(--text-muted);
-    line-height: 1.7;
-    font-size: 0.92rem;
+    line-height: 1.8;
+    font-size: 0.95rem;
 }
 
 /* --- 评价表单 --- */
@@ -430,13 +514,14 @@ body {
     background: var(--bg-card);
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
-    padding: 1.5rem;
+    padding: 1.6rem;
+    box-shadow: var(--shadow-sm);
 }
 
 .review-form-card h5 {
-    font-weight: 700;
-    font-size: 1.05rem;
-    margin-bottom: 1rem;
+    font-weight: 800;
+    font-size: 1.1rem;
+    margin-bottom: 1.1rem;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -451,44 +536,29 @@ body {
     border-radius: var(--radius-sm);
     border-color: var(--border);
     font-size: 0.9rem;
+    padding: 0.6rem 0.9rem;
 }
 
 .review-form-card .form-select:focus,
 .review-form-card .form-control:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+    box-shadow: 0 0 0 3px rgba(232, 93, 4, 0.12);
 }
 
 .btn-primary {
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     border: none;
     border-radius: var(--radius-full);
-    padding: 0.6rem 1.8rem;
-    font-weight: 600;
+    padding: 0.65rem 1.8rem;
+    font-weight: 700;
     font-size: 0.9rem;
     transition: var(--transition);
 }
 
 .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(232, 93, 4, 0.35);
     background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-}
-
-/* 也支持 btn-danger 样式（兼容模板中的原有 class） */
-.btn-danger {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
-    border: none !important;
-    border-radius: var(--radius-full) !important;
-    padding: 0.6rem 1.8rem !important;
-    font-weight: 600 !important;
-    font-size: 0.9rem !important;
-    transition: var(--transition) !important;
-}
-
-.btn-danger:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.35) !important;
 }
 
 /* --- 评价卡片 --- */
@@ -496,13 +566,15 @@ body {
     background: var(--bg-card);
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
-    padding: 1.2rem 1.5rem;
-    margin-bottom: 0.8rem;
+    padding: 1.3rem 1.6rem;
+    margin-bottom: 0.9rem;
     transition: var(--transition);
+    box-shadow: var(--shadow-sm);
 }
 
 .review-card:hover {
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(232, 93, 4, 0.15);
 }
 
 .review-header {
@@ -514,7 +586,7 @@ body {
 
 .review-username {
     font-weight: 700;
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     color: var(--text);
     display: flex;
     align-items: center;
@@ -522,8 +594,8 @@ body {
 }
 
 .review-avatar {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-light), var(--accent));
     display: flex;
@@ -531,24 +603,25 @@ body {
     justify-content: center;
     color: #fff;
     font-weight: 700;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 8px rgba(232, 93, 4, 0.2);
 }
 
 .review-time {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     color: var(--text-light);
 }
 
 .review-stars {
     margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     letter-spacing: 2px;
 }
 
 .review-content {
     color: var(--text-muted);
-    font-size: 0.88rem;
-    line-height: 1.6;
+    font-size: 0.9rem;
+    line-height: 1.7;
     margin: 0;
 }
 
@@ -557,13 +630,14 @@ body {
     background: var(--bg-card);
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: 1.6rem;
+    margin-bottom: 1.6rem;
+    box-shadow: var(--shadow-sm);
 }
 
 .search-header h4 {
-    font-weight: 700;
-    font-size: 1.15rem;
+    font-weight: 800;
+    font-size: 1.2rem;
     margin: 0;
 }
 
@@ -574,40 +648,41 @@ body {
 /* --- 空状态 --- */
 .empty-state {
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 3.5rem 1rem;
     color: var(--text-muted);
 }
 
 .empty-state i {
-    font-size: 3rem;
+    font-size: 3.2rem;
     color: var(--border);
     margin-bottom: 1rem;
     display: block;
 }
 
 .empty-state p {
-    font-size: 0.92rem;
+    font-size: 0.95rem;
 }
 
 /* --- 消息提示 --- */
 .alert {
     border-radius: var(--radius-sm);
     border: none;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
+    box-shadow: var(--shadow-sm);
 }
 
 .alert-success {
-    background: #E8F5E9;
+    background: #EDF7ED;
     color: #2E7D32;
 }
 
 .alert-info {
-    background: #E3F2FD;
+    background: #E8F4FD;
     color: #1565C0;
 }
 
 .alert-warning {
-    background: #FFF3E0;
+    background: #FFF6E8;
     color: #E65100;
 }
 
@@ -620,26 +695,29 @@ body {
 footer {
     background: var(--bg-card) !important;
     border-top: 1px solid var(--border) !important;
-    padding: 1.2rem 0 !important;
-    margin-top: 2rem !important;
+    padding: 1.4rem 0 !important;
+    margin-top: 2.5rem !important;
 }
 
 footer p {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     color: var(--text-light) !important;
 }
 
 /* --- 页面标题 --- */
 .page-title {
-    font-weight: 800;
-    font-size: 1.3rem;
+    font-size: 1.45rem;
     margin-bottom: 1.5rem;
     color: var(--text);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
 }
 
 .page-title small {
+    font-family: "Noto Sans SC", sans-serif;
     font-weight: 500;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: var(--text-muted);
 }
 
@@ -652,27 +730,27 @@ footer p {
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     color: var(--text-muted);
+    box-shadow: var(--shadow-sm);
 }
 
 .login-hint i {
     color: var(--primary);
-    font-size: 1.2rem;
+    font-size: 1.25rem;
 }
 
 .login-hint a {
     color: var(--primary);
-    font-weight: 600;
+    font-weight: 700;
     text-decoration: underline;
     text-underline-offset: 2px;
 }
 
 /* --- 评价区域标题 --- */
 .reviews-section-title {
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    margin-bottom: 1.1rem;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -687,35 +765,46 @@ footer p {
     background: var(--bg-card);
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
-    padding: 1.2rem;
+    padding: 1.4rem 1rem;
     text-align: center;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
 }
 
 .stat-number {
-    font-size: 2rem;
+    font-family: "Noto Serif SC", serif;
+    font-size: 2.2rem;
     font-weight: 800;
     color: var(--primary);
     line-height: 1;
 }
 
 .stat-label {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
-    margin-top: 0.3rem;
+    margin-top: 0.35rem;
+    font-weight: 500;
 }
 
 .chart-card {
     background: var(--bg-card);
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
-    padding: 1.5rem;
+    padding: 1.6rem;
+    box-shadow: var(--shadow-sm);
+    height: 100%;
 }
 
 .chart-title {
-    font-weight: 700;
-    font-size: 1rem;
+    font-weight: 800;
+    font-size: 1.05rem;
     color: var(--text);
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.3rem;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -729,55 +818,75 @@ footer p {
 .taste-profile-card {
     background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
     border-radius: var(--radius-lg);
-    padding: 2rem;
+    padding: 2.2rem;
     color: #fff;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.taste-profile-card::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    filter: blur(40px);
 }
 
 .taste-profile-header {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 1.5rem;
+    gap: 18px;
+    margin-bottom: 1.6rem;
+    position: relative;
+    z-index: 1;
 }
 
 .taste-avatar {
-    width: 56px;
-    height: 56px;
+    width: 62px;
+    height: 62px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 800;
     flex-shrink: 0;
+    backdrop-filter: blur(4px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .taste-profile-header h4 {
-    font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     margin: 0;
 }
 
 .taste-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 0.5rem;
+    gap: 8px;
+    margin-top: 0.6rem;
 }
 
 .taste-tag {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.22);
     border-radius: var(--radius-full);
-    padding: 0.25rem 0.75rem;
-    font-size: 0.78rem;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.82rem;
     font-weight: 500;
     backdrop-filter: blur(4px);
 }
 
 .taste-stats {
     display: flex;
-    gap: 2rem;
+    gap: 2.2rem;
+    position: relative;
+    z-index: 1;
 }
 
 .taste-stat-item {
@@ -785,33 +894,34 @@ footer p {
 }
 
 .taste-stat-num {
-    font-size: 1.8rem;
+    font-family: "Noto Serif SC", serif;
+    font-size: 2rem;
     font-weight: 800;
     line-height: 1;
 }
 
 .taste-stat-label {
-    font-size: 0.78rem;
-    opacity: 0.8;
-    margin-top: 0.2rem;
+    font-size: 0.8rem;
+    opacity: 0.85;
+    margin-top: 0.25rem;
 }
 
 /* 分类评分进度条 */
 .cat-rating-bars {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 .cat-rating-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
 }
 
 .cat-rating-name {
-    width: 80px;
-    font-size: 0.88rem;
+    width: 90px;
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--text);
     text-align: right;
@@ -820,22 +930,22 @@ footer p {
 
 .cat-rating-bar-bg {
     flex: 1;
-    height: 10px;
+    height: 12px;
     background: var(--border);
-    border-radius: 5px;
+    border-radius: 6px;
     overflow: hidden;
 }
 
 .cat-rating-bar {
     height: 100%;
     background: linear-gradient(90deg, var(--primary), var(--accent));
-    border-radius: 5px;
-    transition: width 0.6s ease;
+    border-radius: 6px;
+    transition: width 0.8s ease;
 }
 
 .cat-rating-value {
-    width: 130px;
-    font-size: 0.8rem;
+    width: 140px;
+    font-size: 0.82rem;
     color: var(--text-muted);
     flex-shrink: 0;
 }
@@ -845,33 +955,35 @@ footer p {
     background: var(--bg-card);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
-    padding: 3rem 2rem;
+    padding: 3.5rem 2rem;
     text-align: center;
+    box-shadow: var(--shadow-sm);
 }
 
 .taste-login-icon {
-    font-size: 3rem;
+    font-size: 3.2rem;
     color: var(--primary);
     margin-bottom: 1rem;
 }
 
 .taste-login-card h4 {
-    font-weight: 700;
+    font-weight: 800;
     margin-bottom: 0.5rem;
+    font-size: 1.3rem;
 }
 
 .taste-login-card p {
     color: var(--text-muted);
-    font-size: 0.92rem;
-    max-width: 400px;
-    margin: 0 auto 1.5rem;
+    font-size: 0.95rem;
+    max-width: 420px;
+    margin: 0 auto 1.6rem;
 }
 
 /* --- 动画 --- */
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(16px);
+        transform: translateY(18px);
     }
     to {
         opacity: 1;
@@ -880,34 +992,38 @@ footer p {
 }
 
 .animate-in {
-    animation: fadeInUp 0.4s ease-out both;
+    animation: fadeInUp 0.5s ease-out both;
 }
 
-.animate-in:nth-child(2) { animation-delay: 0.05s; }
-.animate-in:nth-child(3) { animation-delay: 0.1s; }
-.animate-in:nth-child(4) { animation-delay: 0.15s; }
-.animate-in:nth-child(5) { animation-delay: 0.2s; }
-.animate-in:nth-child(6) { animation-delay: 0.25s; }
-.animate-in:nth-child(7) { animation-delay: 0.3s; }
-.animate-in:nth-child(8) { animation-delay: 0.35s; }
+.animate-in:nth-child(2) { animation-delay: 0.06s; }
+.animate-in:nth-child(3) { animation-delay: 0.12s; }
+.animate-in:nth-child(4) { animation-delay: 0.18s; }
+.animate-in:nth-child(5) { animation-delay: 0.24s; }
+.animate-in:nth-child(6) { animation-delay: 0.30s; }
+.animate-in:nth-child(7) { animation-delay: 0.36s; }
+.animate-in:nth-child(8) { animation-delay: 0.42s; }
 
 /* --- 响应式 --- */
 @media (max-width: 768px) {
     .hero-section {
-        padding: 2rem 1.5rem;
+        padding: 2.2rem 1.5rem;
     }
 
     .hero-section h1 {
-        font-size: 1.5rem;
+        font-size: 1.7rem;
     }
 
     .hero-emoji {
-        font-size: 2rem;
-        right: 1.5rem;
+        font-size: 2.4rem;
+        right: 1.2rem;
+    }
+
+    .section-title {
+        font-size: 1.15rem;
     }
 
     .shop-hero-img {
-        height: 200px;
+        height: 220px;
     }
 
     .filter-sidebar {
@@ -916,6 +1032,10 @@ footer p {
     }
 
     .navbar .form-control {
-        width: 140px;
+        width: 150px;
+    }
+
+    .taste-stats {
+        gap: 1.2rem;
     }
 }

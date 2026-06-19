@@ -5,13 +5,13 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-7">
-        <div class="card shadow-sm animate-in">
-            <div class="card-body" style="padding:2rem;">
-                <h3 style="font-weight:800; font-size:1.4rem; margin-bottom:1.5rem;">发布代取需求</h3>
+        <div class="card animate-in">
+            <div class="card-body">
+                <h3 class="page-title mb-4">发布代取需求</h3>
                 <form method="post">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="title" class="form-label">包裹简述 <span style="color:var(--danger);">*</span></label>
+                        <label for="title" class="form-label">包裹简述 <span class="required">*</span></label>
                         <input type="text" class="form-control" id="title" name="title" placeholder="如：中通快递小包裹" value="{{ form_data.title|default:'' }}" required>
                     </div>
                     <div class="mb-3">
@@ -20,7 +20,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="location" class="form-label">快递点 <span style="color:var(--danger);">*</span></label>
+                            <label for="location" class="form-label">快递点 <span class="required">*</span></label>
                             <select class="form-select" id="location" name="location" required>
                                 <option value="">请选择快递点</option>
                                 {% for value, label in locations %}
@@ -29,7 +29,7 @@
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="reward" class="form-label">报酬金额 (元) <span style="color:var(--danger);">*</span></label>
+                            <label for="reward" class="form-label">报酬金额 (元) <span class="required">*</span></label>
                             <input type="number" class="form-control" id="reward" name="reward" step="0.01" min="0" placeholder="如：3.00" value="{{ form_data.reward|default:'' }}" required>
                         </div>
                     </div>
@@ -38,10 +38,10 @@
                         <input type="text" class="form-control" id="pickup_code" name="pickup_code" placeholder="可选" value="{{ form_data.pickup_code|default:'' }}">
                     </div>
                     <div class="mb-3">
-                        <label for="contact" class="form-label">联系方式 <span style="color:var(--danger);">*</span></label>
+                        <label for="contact" class="form-label">联系方式 <span class="required">*</span></label>
                         <input type="text" class="form-control" id="contact" name="contact" placeholder="如：微信号 / 手机号" value="{{ form_data.contact|default:'' }}" required>
                     </div>
-                    <button type="submit" class="btn btn-accent w-100 mt-1" style="padding:0.7rem;">发布需求</button>
+                    <button type="submit" class="btn btn-accent w-100 mt-1">发布需求</button>
                 </form>
             </div>
         </div>

@@ -5,18 +5,18 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card shadow-sm animate-in">
-            <div class="card-body" style="padding:1.8rem;">
+        <div class="card animate-in">
+            <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-3">
-                    <h4 style="font-weight:800; margin:0;">{{ order.title }}</h4>
+                    <h4 class="order-title">{{ order.title }}</h4>
                     {% if order.status == 'pending' %}
-                        <span class="badge badge-pending" style="font-size:0.85rem;">待接单</span>
+                        <span class="badge badge-pending">待接单</span>
                     {% elif order.status == 'accepted' %}
-                        <span class="badge badge-accepted" style="font-size:0.85rem;">已接单</span>
+                        <span class="badge badge-accepted">已接单</span>
                     {% elif order.status == 'completed' %}
-                        <span class="badge badge-completed" style="font-size:0.85rem;">已完成</span>
+                        <span class="badge badge-completed">已完成</span>
                     {% else %}
-                        <span class="badge badge-cancelled" style="font-size:0.85rem;">已取消</span>
+                        <span class="badge badge-cancelled">已取消</span>
                     {% endif %}
                 </div>
 
@@ -34,12 +34,12 @@
                     {% if order.pickup_code %}
                     <tr>
                         <th>取件码</th>
-                        <td><code style="background:var(--primary-light); color:var(--primary-dark); padding:0.2rem 0.5rem; border-radius:4px;">{{ order.pickup_code }}</code></td>
+                        <td><span class="detail-code">{{ order.pickup_code }}</span></td>
                     </tr>
                     {% endif %}
                     <tr>
                         <th>报酬</th>
-                        <td><strong style="color:var(--accent); font-size:1.1rem;">¥{{ order.reward }}</strong></td>
+                        <td><span class="order-price" style="font-size:1.1rem;">¥{{ order.reward }}</span></td>
                     </tr>
                     <tr>
                         <th>联系方式</th>
@@ -62,7 +62,7 @@
                 </table>
 
                 {% if user.is_authenticated %}
-                <div class="d-flex flex-wrap gap-2 mt-3 pt-3" style="border-top:1px solid var(--border);">
+                <div class="detail-actions">
                     {% if order.status == 'pending' and order.publisher != user %}
                         <form method="post" action="{% url 'accept_order' order.id %}">
                             {% csrf_token %}
@@ -89,7 +89,7 @@
                 {% endif %}
             </div>
         </div>
-        <a href="{% url 'orders_index' %}" class="btn btn-ghost mt-3">&larr; 返回列表</a>
+        <a href="{% url 'orders_index' %}" class="btn btn-ghost mt-3">← 返回列表</a>
     </div>
 </div>
 {% endblock %}

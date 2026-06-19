@@ -70,7 +70,7 @@
                     <div class="card h-100 order-card status-{{ order.status }}">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title mb-0" style="font-weight:700; font-size:1.05rem; color:var(--text);">{{ order.title }}</h5>
+                                <h5 class="order-title">{{ order.title }}</h5>
                                 {% if order.status == 'pending' %}
                                     <span class="badge badge-pending">待接单</span>
                                 {% elif order.status == 'accepted' %}
@@ -81,11 +81,11 @@
                                     <span class="badge badge-cancelled">已取消</span>
                                 {% endif %}
                             </div>
-                            <p class="mb-1" style="font-size:0.85rem; color:var(--text-muted);">
-                                {{ order.get_location_display }} &middot; 报酬 <strong style="color:var(--accent);">¥{{ order.reward }}</strong>
+                            <p class="order-meta">
+                                {{ order.get_location_display }} · 报酬 <span class="order-price">¥{{ order.reward }}</span>
                             </p>
-                            <p class="mb-0" style="font-size:0.82rem; color:var(--text-muted);">
-                                {{ order.publisher.username }} &middot; {{ order.created_at|date:"m-d H:i" }}
+                            <p class="order-publisher">
+                                {{ order.publisher.username }} · {{ order.created_at|date:"m-d H:i" }}
                             </p>
                         </div>
                     </div>

@@ -3,9 +3,9 @@
 {% block title %}数据统计 - CampusBite{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 style="font-weight:800; font-size:1.6rem;">📊 数据统计</h2>
-    <span style="color:var(--text-muted); font-size:0.88rem;">共 {{ total_orders }} 条订单</span>
+<div class="page-header mb-4">
+    <h2 class="page-title">📊 数据统计</h2>
+    <span class="page-meta">共 {{ total_orders }} 条订单</span>
 </div>
 
 {% if total_orders == 0 %}
@@ -20,7 +20,7 @@
 
 <div class="row g-3 mb-4">
     <div class="col-md-6">
-        <div class="card">
+        <div class="card animate-in">
             <div class="card-body">
                 <h6 class="stat-section-label">报酬金额描述统计</h6>
                 <table class="table table-sm stat-table mb-0">
@@ -38,7 +38,7 @@
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card">
+        <div class="card animate-in">
             <div class="card-body">
                 <h6 class="stat-section-label">各快递点订单统计</h6>
                 <table class="table table-sm stat-table mb-0">
@@ -65,7 +65,7 @@
 
 <div class="row g-3 mb-4">
     <div class="col-md-6">
-        <div class="card">
+        <div class="card animate-in">
             <div class="card-body">
                 <h6 class="chart-label">订单状态分布（饼图）</h6>
                 <div class="chart-wrapper">
@@ -75,7 +75,7 @@
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card">
+        <div class="card animate-in">
             <div class="card-body">
                 <h6 class="chart-label">各快递点订单数量（柱状图）</h6>
                 <div class="chart-wrapper">
@@ -88,7 +88,7 @@
 
 <div class="row g-3 mb-4">
     <div class="col-md-6">
-        <div class="card">
+        <div class="card animate-in">
             <div class="card-body">
                 <h6 class="chart-label">各快递点平均报酬（柱状图）</h6>
                 <div class="chart-wrapper">
@@ -98,7 +98,7 @@
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card">
+        <div class="card animate-in">
             <div class="card-body">
                 <h6 class="chart-label">报酬金额分布（直方图）</h6>
                 <div class="chart-wrapper">
