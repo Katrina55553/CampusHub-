@@ -1,16 +1,24 @@
 import statistics
 from decimal import Decimal, InvalidOperation
-from django.utils import timezone
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.db import transaction
-from django.db.models import Q, Avg, Count
+from django.db.models import Q, Count
 from django.views.decorators.http import require_POST
+
 from .models import Order, LOCATIONS
+from .services.lifecycle import (
+    accept_order as accept_order_service,
+    complete_order as complete_order_service,
+    cancel_order as cancel_order_service,
+    OrderLifecycleError,
+)
+from .services.stats import OrderStats
+from utils.filters import QueryFilter
 
 
 # ==================== 用户系统 ====================
@@ -28,7 +36,6 @@ def register(request):
         elif User.objects.filter(username=username).exists():
             messages.error(request, '用户名已存在')
         else:
-            # 校验密码强度（执行 AUTH_PASSWORD_VALIDATORS）
             try:
                 validate_password(password)
             except Exception as e:
@@ -66,15 +73,26 @@ def logout_view(request):
 
 # ==================== 订单系统 ====================
 
+# 通用查询过滤器
+_ORDER_FILTER = QueryFilter(
+    Order,
+    filters={
+        'status': lambda qs, value, meta: (
+            qs.filter(status=value) if value in ('pending', 'accepted', 'completed', 'cancelled') else qs
+        ),
+    },
+    search_fields=['title', 'description'],
+    search_param='q',
+    select_related=['publisher', 'helper'],
+    default_ordering='-created_at',
+)
+
+
 def index(request):
     """首页：订单列表，支持按状态筛选"""
-    status = request.GET.get('status', '')
-    orders = Order.objects.select_related('publisher', 'helper')
+    orders, meta = _ORDER_FILTER.apply(request.GET)
+    current_status = request.GET.get('status', '')
 
-    if status in ['pending', 'accepted', 'completed', 'cancelled']:
-        orders = orders.filter(status=status)
-
-    # 统计数据（单次查询优化）
     stats = Order.objects.aggregate(
         total=Count('id'),
         pending=Count('id', filter=Q(status='pending')),
@@ -84,8 +102,17 @@ def index(request):
 
     return render(request, 'orders/index.html', {
         'orders': orders,
-        'current_status': status,
+        'current_status': current_status,
         'stats': stats,
+    })
+
+
+def orders_search(request):
+    """搜索订单"""
+    orders, meta = _ORDER_FILTER.apply(request.GET)
+    return render(request, 'orders/search.html', {
+        'orders': orders,
+        'keyword': meta.get('q', ''),
     })
 
 
@@ -114,7 +141,6 @@ def create_order(request):
                 'form_data': request.POST,
             })
 
-        # 校验 reward 是否为合法数字
         try:
             reward = Decimal(reward)
             if reward < 0:
@@ -135,6 +161,7 @@ def create_order(request):
             contact=contact,
             publisher=request.user,
         )
+        OrderStats.invalidate()
         messages.success(request, '订单发布成功')
         return redirect('orders_index')
 
@@ -144,21 +171,15 @@ def create_order(request):
 @login_required
 @require_POST
 def accept_order(request, order_id):
-    """接单（仅 POST，原子操作防止竞态）"""
-    with transaction.atomic():
-        order = get_object_or_404(Order.objects.select_for_update(), pk=order_id)
-
-        if order.status != 'pending':
-            messages.error(request, '该订单已被接单或已完成')
-        elif order.publisher == request.user:
-            messages.error(request, '不能接自己发布的订单')
-        else:
-            order.helper = request.user
-            order.status = 'accepted'
-            order.accepted_at = timezone.now()
-            order.save()
-            messages.success(request, '接单成功')
-
+    """接单（仅 POST）"""
+    try:
+        accept_order_service(order_id, request.user)
+        OrderStats.invalidate()
+        messages.success(request, '接单成功')
+    except OrderLifecycleError as e:
+        messages.error(request, str(e))
+    except Order.DoesNotExist:
+        messages.error(request, '订单不存在')
     return redirect('order_detail', order_id=order_id)
 
 
@@ -166,36 +187,30 @@ def accept_order(request, order_id):
 @require_POST
 def complete_order(request, order_id):
     """确认完成（仅 POST）"""
-    order = get_object_or_404(Order, pk=order_id)
-
-    if order.publisher != request.user:
-        messages.error(request, '只有发布者可以确认完成')
-    elif order.status != 'accepted':
-        messages.error(request, '当前状态无法确认完成')
-    else:
-        order.status = 'completed'
-        order.save()
+    try:
+        complete_order_service(order_id, request.user)
+        OrderStats.invalidate()
         messages.success(request, '订单已完成')
-
-    return redirect('order_detail', order_id=order.id)
+    except OrderLifecycleError as e:
+        messages.error(request, str(e))
+    except Order.DoesNotExist:
+        messages.error(request, '订单不存在')
+    return redirect('order_detail', order_id=order_id)
 
 
 @login_required
 @require_POST
 def cancel_order(request, order_id):
     """取消订单（仅 POST）"""
-    order = get_object_or_404(Order, pk=order_id)
-
-    if order.publisher != request.user:
-        messages.error(request, '只有发布者可以取消订单')
-    elif order.status not in ('pending', 'accepted'):
-        messages.error(request, '当前状态无法取消')
-    else:
-        order.status = 'cancelled'
-        order.save()
+    try:
+        cancel_order_service(order_id, request.user)
+        OrderStats.invalidate()
         messages.success(request, '订单已取消')
-
-    return redirect('order_detail', order_id=order.id)
+    except OrderLifecycleError as e:
+        messages.error(request, str(e))
+    except Order.DoesNotExist:
+        messages.error(request, '订单不存在')
+    return redirect('order_detail', order_id=order_id)
 
 
 @login_required
@@ -209,59 +224,19 @@ def my_orders(request):
     })
 
 
-def orders_search(request):
-    """搜索订单"""
-    keyword = request.GET.get('q', '').strip()
-    orders = Order.objects.none()
-    if keyword:
-        orders = Order.objects.filter(
-            Q(title__icontains=keyword) | Q(description__icontains=keyword)
-        ).select_related('publisher', 'helper')
-    return render(request, 'orders/search.html', {
-        'orders': orders,
-        'keyword': keyword,
-    })
-
-
 def stats(request):
     """数据统计页面：统计描述 + 可视化"""
-    orders = Order.objects.all()
-    rewards = list(orders.values_list('reward', flat=True))
+    data = OrderStats.snapshot()
+    rewards = data['rewards']
+    reward_stats = data['reward_stats']
+    status_counts = data['status_counts']
+    location_data = data['location_data']
 
-    # ===== 统计描述 =====
-    reward_stats = {}
-    if rewards:
-        sorted_rewards = sorted(rewards)
-        n = len(sorted_rewards)
-        reward_stats = {
-            'count': n,
-            'sum': round(sum(sorted_rewards), 2),
-            'mean': round(statistics.mean(sorted_rewards), 2),
-            'median': round(statistics.median(sorted_rewards), 2),
-            'std': round(statistics.stdev(sorted_rewards), 2) if n > 1 else 0,
-            'min': min(sorted_rewards),
-            'max': max(sorted_rewards),
-        }
-
-    # 各状态数量
-    status_counts = dict(
-        orders.values_list('status').annotate(c=Count('id')).values_list('status', 'c')
-    )
-
-    # 各快递点数量 & 平均报酬
-    location_data = (
-        orders.values('location')
-        .annotate(count=Count('id'), avg_reward=Avg('reward'))
-        .order_by('-count')
-    )
     location_map = dict(LOCATIONS)
-
-    # 构造图表数据
     location_labels = [location_map.get(d['location'], d['location']) for d in location_data]
     location_counts = [d['count'] for d in location_data]
     location_avg_rewards = [round(float(d['avg_reward']), 2) for d in location_data]
 
-    # 用于模板表格展示（zip 成元组列表）
     location_table = [
         {'label': l, 'count': c, 'avg': a}
         for l, c, a in zip(location_labels, location_counts, location_avg_rewards)
@@ -275,7 +250,6 @@ def stats(request):
         status_counts.get('cancelled', 0),
     ]
 
-    # 报酬分布（分组统计）
     reward_distribution = {}
     if rewards:
         bins = [0, 2, 4, 6, 8, 10, 100]
@@ -295,18 +269,16 @@ def stats(request):
         'location_table': location_table,
         'reward_dist_labels': list(reward_distribution.keys()),
         'reward_dist_values': list(reward_distribution.values()),
-        'total_orders': orders.count(),
+        'total_orders': data['total_orders'],
     })
 
 
 def predict(request):
     """接单时间预测：基于历史数据的线性回归分析"""
-    # 获取历史已接单数据
     accepted_orders = Order.objects.filter(
         accepted_at__isnull=False
     ).values('reward', 'accepted_at', 'created_at', 'location')
 
-    # 计算每笔订单的接单耗时（分钟）
     data = []
     location_map = dict(LOCATIONS)
     for o in accepted_orders:
@@ -318,18 +290,14 @@ def predict(request):
             'location_label': location_map.get(o['location'], o['location']),
         })
 
-    # ===== 用户输入 =====
     input_reward = request.GET.get('reward', '')
     input_location = request.GET.get('location', '')
     prediction = None
 
-    # ===== 统计分析 =====
     rewards = [d['reward'] for d in data]
     minutes = [d['minutes'] for d in data]
     n = len(data)
 
-    # 线性回归：reward → minutes
-    # y = a + b*x
     regression = None
     if n >= 2:
         x_mean = sum(rewards) / n
@@ -339,7 +307,6 @@ def predict(request):
         if ss_xx > 0:
             b = ss_xy / ss_xx
             a = y_mean - b * x_mean
-            # R² 计算
             ss_res = sum((y - (a + b * x)) ** 2 for x, y in zip(rewards, minutes))
             ss_tot = sum((y - y_mean) ** 2 for y in minutes)
             r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0
@@ -350,7 +317,6 @@ def predict(request):
                 'formula': f'y = {round(a, 2)} + ({round(b, 2)}) × 报酬',
             }
 
-    # 各快递点平均接单时间
     location_stats = {}
     for d in data:
         loc = d['location_label']
@@ -364,19 +330,16 @@ def predict(request):
     ]
     location_avg.sort(key=lambda x: x['avg'])
 
-    # 整体统计
     overall_avg = round(statistics.mean(minutes), 1) if minutes else 0
     overall_median = round(statistics.median(minutes), 1) if minutes else 0
 
-    # ===== 预测 =====
     if input_reward:
         try:
             r = float(input_reward)
             if regression:
                 predicted = regression['a'] + regression['b'] * r
-                predicted = max(1, round(predicted, 1))  # 最少 1 分钟
+                predicted = max(1, round(predicted, 1))
 
-                # 如果指定了快递点，用该快递点的偏差修正
                 if input_location and input_location in location_stats:
                     loc_avg = statistics.mean(location_stats[location_map.get(input_location, input_location)])
                     overall = statistics.mean(minutes)
@@ -391,7 +354,6 @@ def predict(request):
         except ValueError:
             pass
 
-    # 图表数据：散点 + 回归线
     scatter_data = [{'x': d['reward'], 'y': d['minutes']} for d in data]
     regression_line = []
     if regression and rewards:
